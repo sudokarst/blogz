@@ -15,6 +15,9 @@ class Task(db.Model):
     def __init__(self, name):
         self.name = name
 
+    def __str__(self):
+        return self.name
+
 
 
 tasks = []
@@ -26,6 +29,7 @@ def index():
         task = request.form['task']
         tasks.append(task)
 
+    tasks = Task.query.all()
     return render_template('todos.html',title="Get It Done!", tasks=tasks)
 
 
