@@ -21,31 +21,23 @@ class BlogPost(db.Model):
 def index():
     return redirect('/blog')
 
-@app.route('/blog', methods=['POST', 'GET'])
+@app.route('/blog')
 def display_all_posts():
-
-    if request.method == 'POST':
-        task_name = request.form['task']
-        new_task = Task(task_name)
-        db.session.add(new_task)
-        db.session.commit()
 
     posts = BlogPost.query.all()
     return render_template('blog.html',title="It's Alive!",
                             posts=posts)
 
-"""
-@app.route('/delete-task', methods=['POST'])
-def delete_task():
+@app.route('/newpost', methods=['POST'])
+def publish():
 
-    task_id = int(request.form['task-id'])
-    task = Task.query.get(task_id)
-    task.completed = True
-    db.session.add(task)
+    post_title = request.form['title']
+    post_body = request.form['body']
+    new_post = BlogPost(post_title, post_body)
+    db.session.add(new_post)
     db.session.commit()
 
-    return redirect('/')
-"""
+    return redirect('/blog')
 
 
 if __name__ == "__main__":
