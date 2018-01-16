@@ -22,7 +22,7 @@ def index():
     return redirect('/blog')
 
 @app.route('/blog', methods=['POST', 'GET'])
-def index():
+def display_all_posts():
 
     if request.method == 'POST':
         task_name = request.form['task']
