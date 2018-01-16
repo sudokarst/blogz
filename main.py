@@ -28,16 +28,18 @@ def display_all_posts():
     return render_template('blog.html',title="It's Alive!",
                             posts=posts)
 
-@app.route('/newpost', methods=['POST'])
+@app.route('/newpost', methods=['GET', 'POST'])
 def publish():
 
-    post_title = request.form['title']
-    post_body = request.form['body']
-    new_post = BlogPost(post_title, post_body)
-    db.session.add(new_post)
-    db.session.commit()
-
-    return redirect('/blog')
+    if request.method == 'POST':
+        post_title = request.form['title']
+        post_body = request.form['body']
+        new_post = BlogPost(post_title, post_body)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect('blog')
+    else:
+        return render_template('newpost.html')
 
 
 if __name__ == "__main__":

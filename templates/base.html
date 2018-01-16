@@ -1,12 +1,18 @@
 <!doctype html>
 <html>
     <head>
-        <title>{{title}}</title>
+        <title>{{title}}.build-a-blog</title>
     </head>
 <body>
 
     {% block content %}
     {% endblock %}
+
+    <div id="footer">
+        {% block footer %}
+        &copy; Copyright 2018 by <a href="https://github.com/sudokarst">Eric Peterson</a>
+        {% endblock %}
+    </div>
 
 </body>
 </html>
