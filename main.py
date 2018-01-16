@@ -7,24 +7,21 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:beproducti
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-class Task(db.Model):
+class BlogPost(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-    completed = db.Column(db.Boolean)
+    title = db.Column(db.String(255))
+    body = db.Column(db.String(4095))
 
-    def __init__(self, name):
-        self.name = name
-        self.completed = False
+    def __init__(self, title, body):
+        self.title = title
+        self.body = body
 
-    def __str__(self):
-        return self.name
+@app.route('/')
+def index():
+    return redirect('/blog')
 
-
-
-tasks = []
-
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/blog', methods=['POST', 'GET'])
 def index():
 
     if request.method == 'POST':
@@ -33,12 +30,11 @@ def index():
         db.session.add(new_task)
         db.session.commit()
 
-    # tasks = Task.query.all()
-    tasks = Task.query.filter_by(completed=False).all()
-    completed_tasks = Task.query.filter_by(completed=True).all()
-    return render_template('todos.html',title="Get It Done!",
-                            tasks=tasks, completed_tasks=completed_tasks)
+    posts = BlogPost.query.all()
+    return render_template('blog.html',title="It's Alive!",
+                            posts=posts)
 
+"""
 @app.route('/delete-task', methods=['POST'])
 def delete_task():
 
@@ -49,6 +45,7 @@ def delete_task():
     db.session.commit()
 
     return redirect('/')
+"""
 
 
 if __name__ == "__main__":
