@@ -2,9 +2,6 @@
 
 {% block content %}
     <h1>Build A Blog</h1>
-    <form method="GET" action="newpost">
-        <input type="submit" value="new post">
-    </form>
 
     {% if posts|length == 0 %}
     <p>No posts yet</p>

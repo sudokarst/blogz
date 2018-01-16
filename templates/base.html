@@ -1,9 +1,18 @@
 <!doctype html>
 <html>
     <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         <title>{{title}}.build-a-blog</title>
     </head>
 <body>
+
+
+    <div id="topnav">
+        {% block topnav %}
+        <a href="blog">blog</a>
+        <a href="newpost">new post</a>
+        {% endblock %}
+    </div>
 
     {% block content %}
     {% endblock %}
