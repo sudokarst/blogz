@@ -6,13 +6,13 @@
         <h2>New Post</h2>
         <label>
             Title:
-            <input type="text" name='title' />
+            <input type="text" name='title' required>
         </label>
         <label>
             Body:
-            <input type="text" name='body' />
+            <textarea placeholder="Body goes here" name="body" required>{{body}}</textarea>
         </label>
-        <input type="submit" value='Publish' />
+        <input type="submit" value='Publish'>
     </form>
 
 {% endblock %}
