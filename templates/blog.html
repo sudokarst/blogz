@@ -8,13 +8,12 @@
     {% else %}
 
         {% for post in posts[:-1] %}
-            <h2>{{post.title}}</h2>
-            <p>{{post.body}}</p>
+            <a href="blog?id={{post.id}}"><h2>{{post.title}}</h2></a>
             <hr>
         {% endfor %}
-
-        <h2>{{posts[-1].title}}</h2>
-        <p>{{posts[-1].body}}</p>
+        {% for post in posts[-1:] %}
+            <a href="blog?id={{post.id}}"><h2>{{post.title}}</h2></a>
+        {% endfor %}
 
     {% endif %}
 

@@ -24,6 +24,12 @@ def index():
 @app.route('/blog')
 def display_all_posts():
 
+    post_id = request.args.get('id')
+    print("post id {0!r}".format(post_id))
+    if post_id:
+        post = BlogPost.query.filter_by(id=post_id).first()
+        return render_template('post.html', title=post.title, body=post.body)
+
     posts = BlogPost.query.all()
     return render_template('blog.html',title="It's Alive!",
                             posts=posts)
@@ -37,7 +43,7 @@ def publish():
         new_post = BlogPost(post_title, post_body)
         db.session.add(new_post)
         db.session.commit()
-        return redirect('blog')
+        return redirect('blog?id={0}'.format(new_post.id))
     else:
         return render_template('newpost.html')
 
