@@ -7,15 +7,27 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:wordpass@localhos
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(127), unique=True, nullable=False)
+    password = db.Column(db.String(127))
+    blogs = db.relationship('BlogPost', backref='author', lazy=True)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
 class BlogPost(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     body = db.Column(db.String(4095))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __init__(self, title, body):
+    def __init__(self, title, body, author_id):
         self.title = title
         self.body = body
+        self.author_id = author_id
 
 @app.route('/')
 def index():
