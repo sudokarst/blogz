@@ -169,10 +169,6 @@ def logout():
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def publish():
-    if 'username' not in session:
-        flash("please log in to create a new blog post")
-        return redirect('/login')
-
     if request.method == 'POST':
         post_title = request.form['title']
         post_body = request.form['body']
@@ -184,18 +180,20 @@ def publish():
         return render_template('newpost.html')
 
 
-#
-# FOR DEVELOPMENT/DEMONSTRATION ONLY
-#
-# how-to get your secret key
+allowed_routes = ['login', 'display_all_posts', 'index', 'signup']
+
+@app.before_request
+def require_login():
+    if (request.endpoint not in allowed_routes and 'username' not in session):
+        flash("please log in")
+        return redirect("/signup")
+
+# how-to get a secret key
 # >>> import secrets
 # >>> secrets.token_urlsafe(24)
 # ...
 # more info
 # >>> help(secrets)
-#
-# NEVER MAKE YOUR SECRET KEY PUBLIC LIKE I HAVE HERE!!!
-#
 app.secret_key =  'mxLDMoEHmbuewIWDQmOl1oFgpALUScrb'
 
 if __name__ == "__main__":
