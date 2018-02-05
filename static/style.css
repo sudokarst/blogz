@@ -1,1 +1,6 @@
-form { float: left; }
+div { display: inline-block;
+        width: 88%; }
+.error { color: firebrick; }
+.flashes { color: darkgreen; }
+#footer { font-size: 88%; }
+

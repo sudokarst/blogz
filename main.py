@@ -1,4 +1,4 @@
-from flask import Flask, session, request, redirect, render_template
+from flask import escape, flash, Flask, redirect, render_template, request, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 import re
@@ -125,7 +125,7 @@ def new_user():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def do_login():
+def login():
     if request.method == 'GET':
         return render_template('login.html')
 
@@ -137,27 +137,41 @@ def do_login():
     username_error = is_invalid_username(username_attempt)
     if username_error:
         return render_template('login.html', errmsg=username_error)
-    
-    user = User.query.filter_by(username=username_attempt).first()
-    # User enters a username that is stored in the database with the correct password and is redirected to the /newpost page with their username being stored in a session.
-    if user:
-        # TODO: # User enters a username that is stored in the database with an incorrect password and is redirected to the /login page with a message that their password is incorrect.
+    valid_user = User.query.filter_by(username=username_attempt).first()
+    if valid_user:
         valid_password = False
-
         password_attempt = request.form.get('password')
-        if not password_attempt or password_attempt != user.password:
-            return render_template('login.html',
-                                    username=username_attempt,
-                                    invalid_password="invalid password")
-        else:
+        if password_attempt and password_attempt == valid_user.password:
+            # User enters a username that is stored in the database with the correct password and is redirected to the /newpost page with their username being stored in a session.
+            session['username'] = valid_user.username
             return redirect('/newpost')
+        else:
+            # User enters a username that is stored in the database with an incorrect password and is redirected to the /login page with a message that their password is incorrect.
+            return render_template('login.html',
+                                    username=valid_user.username,
+                                    errmsg="invalid password")
     else:
-        return render_template('login.html', errmsg="username does not exist")
         # User tries to login with a username that is not stored in the database and is redirected to the /login page with a message that this username does not exist.
+        return render_template('login.html', errmsg="no such username")
     # User does not have an account and clicks "Create Account" and is directed to the /signup page.
+
+@app.route('/checklogin')
+def checklogin():
+    if 'username' in session:
+        return 'Logged in as %s' % escape(session['username'])
+    return 'You are not logged in'
+
+@app.route('/logout')
+def logout():
+    if 'username' in session:
+        session.pop('username', None)
+    return redirect('/blog')
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def publish():
+    if 'username' not in session:
+        flash("please log in to create a new blog post")
+        return redirect('/login')
 
     if request.method == 'POST':
         post_title = request.form['title']
@@ -170,8 +184,18 @@ def publish():
         return render_template('newpost.html')
 
 
+#
+# FOR DEVELOPMENT/DEMONSTRATION ONLY
+#
+# how-to get your secret key
 # >>> import secrets
 # >>> secrets.token_urlsafe(24)
+# ...
+# more info
+# >>> help(secrets)
+#
+# NEVER MAKE YOUR SECRET KEY PUBLIC LIKE I HAVE HERE!!!
+#
 app.secret_key =  'mxLDMoEHmbuewIWDQmOl1oFgpALUScrb'
 
 if __name__ == "__main__":
