@@ -144,6 +144,7 @@ def login():
         if password_attempt and password_attempt == valid_user.password:
             # User enters a username that is stored in the database with the correct password and is redirected to the /newpost page with their username being stored in a session.
             session['username'] = valid_user.username
+            session['user_id'] = valid_user.id
             return redirect('/newpost')
         else:
             # User enters a username that is stored in the database with an incorrect password and is redirected to the /login page with a message that their password is incorrect.
@@ -165,6 +166,7 @@ def checklogin():
 def logout():
     if 'username' in session:
         session.pop('username', None)
+        session.pop('user_id', None)
     return redirect('/blog')
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -172,7 +174,16 @@ def publish():
     if request.method == 'POST':
         post_title = request.form['title']
         post_body = request.form['body']
-        new_post = BlogPost(post_title, post_body)
+        if 'user_id' in session:
+            author_id = session['user_id']
+        elif 'username' in session:
+            user = User.query.filter_by(username=session['username']).first()
+            session['user_id'] = author_id = user.id
+        else:
+            # this should never happen
+            return redirect('login')
+
+        new_post = BlogPost(post_title, post_body, author_id)
         db.session.add(new_post)
         db.session.commit()
         return redirect('blog?id={0}'.format(new_post.id))
