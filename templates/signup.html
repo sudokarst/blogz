@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}signup{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>New users created here:</h1>
+    <form action="/signup" method="POST">
+        <table>
+        <tr>
+            <td><label for="username">Username:</label></td>
+            <td><input name="username" value="{{username}}">
+                <span class="error">{{username_invalid}}</span></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password:</label></td>
+            <td><input name="password" type="password">
+                <span class="error">{{password_invalid}}</span></td>
+        </tr>
+        <tr>
+            <td><label for="password2">Verify Password:</label></td>
+            <td><input name="password2" type="password">
+                <span class="error">{{password2_invalid}}</span></td>
+        </tr>
+        </table>
+        <input type="submit">
+    </form>
+{% endblock %}
