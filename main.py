@@ -51,25 +51,25 @@ def is_invalid_password(password_attempt):
 
 @app.route('/')
 def root():
-    return redirect('/blog')
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 
 @app.route('/blog')
-def show_posts():
+def show_post():
     post_id = request.args.get('id')
-    print("post id {0!r}".format(post_id))
     if post_id:
-        return redirect('/blog/{0}'.format(post_id))
-
+        post = BlogPost.query.filter_by(id=post_id).first()
+        return render_template('post.html', title=post.title, body=post.body)
+    user_id = request.args.get('user')
+    posts = []
+    if user_id:
+        username = User.query.filter_by(id=user_id).first().username
+        posts = BlogPost.query.filter_by(author_id=user_id).all()
+        return render_template('user.html', author_name=username, posts = posts)
     posts = BlogPost.query.all()
-    return render_template('blog.html',title="It's Alive!",
-                            posts=posts)
+    return render_template('blog.html', posts=posts)
                             
-@app.route('/blog/<int:post_id>')
-def show_post(post_id):
-    post = BlogPost.query.filter_by(id=post_id).first()
-    return render_template('post.html', title=post.title, body=post.body)
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def new_user():
@@ -197,7 +197,7 @@ def publish():
         return render_template('newpost.html')
 
 
-allowed_routes = ['static', 'root', 'show_post', 'show_posts', 'new_user', 'login']
+allowed_routes = ['static', 'root', 'show_post', 'new_user', 'login']
 
 @app.before_request
 def require_login():

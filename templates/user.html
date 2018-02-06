@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>all posts</h1>
+    <h1>posts by {{author_name}}</h1>
 
     {% if posts|length == 0 %}
     <p>No posts yet</p>
@@ -11,7 +11,6 @@
         {% for post in posts %}
             {{ hr_joiner() }}
             <a href="blog?id={{post.id}}"><h2>{{post.title}}</h2></a>
-            written by <a href="blog?user={{post.author_id}}">{{post.author.username}}</a>
         {% endfor %}
 
     {% endif %}

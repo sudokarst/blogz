@@ -16,7 +16,7 @@
     <div id="topnav">
         {% block topnav %}
             <a href="{{ url_for('root') }}">Home</a>
-            <a href="{{ url_for('show_posts') }}">blog</a>
+            <a href="{{ url_for('show_post') }}">blog</a>
             <a href="{{ url_for('publish') }}">new post</a>
             {% if session.username %}
                 <a href="{{ url_for('logout') }}">logout {{session.username}}</a>
