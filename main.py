@@ -162,12 +162,6 @@ def login():
         return render_template('login.html', errmsg="no such username")
     # User does not have an account and clicks "Create Account" and is directed to the /signup page.
 
-@app.route('/checklogin')
-def checklogin():
-    if 'username' in session:
-        return 'Logged in as %s' % escape(session['username'])
-    return 'You are not logged in'
-
 @app.route('/logout')
 def logout():
     if 'username' in session:
