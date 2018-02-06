@@ -36,9 +36,9 @@ class BlogPost(db.Model):
         self.author_id = author_id
 
 def is_invalid_username(username_attempt):
-    """returns False if username_attempt is a valid username,
+    """returns '' if username_attempt is a valid username,
         otherwise returns a helpful error message"""
-    return (False if re.match("^[a-zA-Z][a-zA-Z0-9_]{2,19}$",
+    return ('' if re.match("^[a-zA-Z][a-zA-Z0-9_]{2,19}$",
             username_attempt) else
             """username must be 3-20 characters in length, first character in
             [a-zA-Z], remaining characters in [a-zA-Z0-9_]""")
@@ -50,21 +50,25 @@ def is_invalid_password(password_attempt):
         "password must be 3-20 characters in length, with no whitespace")
 
 @app.route('/')
-def index():
+def root():
     return redirect('/blog')
 
 
 @app.route('/blog')
-def display_all_posts():
+def show_posts():
     post_id = request.args.get('id')
     print("post id {0!r}".format(post_id))
     if post_id:
-        post = BlogPost.query.filter_by(id=post_id).first()
-        return render_template('post.html', title=post.title, body=post.body)
+        return redirect('/blog/{0}'.format(post_id))
 
     posts = BlogPost.query.all()
     return render_template('blog.html',title="It's Alive!",
                             posts=posts)
+                            
+@app.route('/blog/<int:post_id>')
+def show_post(post_id):
+    post = BlogPost.query.filter_by(id=post_id).first()
+    return render_template('post.html', title=post.title, body=post.body)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -91,7 +95,8 @@ def new_user():
         validated = False
         username_errmsg = "username already exists"
     valid_username = username_attempt if validated else None
-    
+    #if not username_errmsg:
+        #username_errmsg = ''
     #
     # password validation
     #
@@ -111,6 +116,7 @@ def new_user():
     
     if not validated:
         return render_template('signup.html',
+                    username=username_attempt,
                     username_invalid=username_errmsg,
                     password_invalid=password_errmsg,
                     password2_invalid=password2_errmsg)
@@ -191,13 +197,15 @@ def publish():
         return render_template('newpost.html')
 
 
-allowed_routes = ['login', 'display_all_posts', 'index', 'signup']
+allowed_routes = ['static', 'root', 'show_post', 'show_posts', 'new_user', 'login']
 
 @app.before_request
 def require_login():
+    # !!! request endpoint is view function, not URL !!!
+    print('-*'*8,"require_login(): request.endpoint='{0}'".format(request.endpoint))
     if (request.endpoint not in allowed_routes and 'username' not in session):
         flash("please log in")
-        return redirect("/signup")
+        return redirect('/login')
 
 # how-to get a secret key
 # >>> import secrets
